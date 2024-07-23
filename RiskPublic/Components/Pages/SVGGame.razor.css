@@ -1,0 +1,870 @@
+﻿.country {
+    transition: fill 1s ease-in-out, box-shadow 1s ease-in-out;
+}
+#alberta {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12879);
+    enable-background: accumulate;
+}
+
+#western_australia {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter14319);
+    enable-background: accumulate;
+}
+
+#peru {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter13015);
+}
+
+#central_america {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter13011);
+}
+
+#quebec {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter13007);
+}
+
+#western_united_states {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter13003);
+}
+
+#eastern_united_states {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12999);
+}
+
+#argentina {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12995);
+}
+
+
+#brazil {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12991);
+}
+
+#south_africa {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12987);
+}
+
+#congo {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12983);
+}
+
+#east_africa {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12979);
+}
+
+#egypt {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12975);
+}
+
+#northern_europe {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12971);
+    enable-background: accumulate;
+}
+
+#western_europe {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12967);
+    enable-background: accumulate;
+}
+
+#southern_europe {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12963);
+    enable-background: accumulate;
+}
+
+#ukraine {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12959);
+    enable-background: accumulate;
+}
+
+#irkutsk {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12955);
+    enable-background: accumulate;
+}
+
+#mongolia {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12951);
+    enable-background: accumulate;
+}
+
+#china {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12947);
+    enable-background: accumulate;
+}
+
+#siam {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12943);
+    enable-background: accumulate;
+}
+
+#india {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12939);
+    enable-background: accumulate;
+}
+
+#middle_east {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12935);
+    enable-background: accumulate;
+}
+
+#afghanistan {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12931);
+    enable-background: accumulate;
+}
+
+#ural {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12927);
+    enable-background: accumulate;
+}
+
+#siberia {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12923);
+    enable-background: accumulate;
+}
+
+#kamchatka {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12919);
+    enable-background: accumulate;
+}
+
+#yakursk {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12915);
+    enable-background: accumulate;
+}
+
+#japan {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker-start: none;
+    marker-mid: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12911);
+}
+
+#scandinavia {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px; /* Adjust the value as needed */
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165; /* Adjust the value as needed */
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12907); /* Assuming the filter is defined elsewhere */
+    enable-background: accumulate;
+}
+
+#great_britain {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-anchor: start;
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker-start: none;
+    marker-mid: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12903);
+}
+
+#iceland {
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-anchor: start;
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker-start: none;
+    marker-mid: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12899);
+}
+
+#greenland {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker-start: none;
+    marker-mid: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12895);
+}
+
+#north_africa {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12891);
+}
+
+#madagascar {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12887);
+}
+
+#venezuela {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12883);
+}
+
+#northwest_territory {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12879);
+}
+
+#ontario {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12875);
+}
+
+#alaska {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.2px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12871);
+}
+
+#new_guinea {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12867);
+}
+
+#indonesia {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    display: inline;
+    filter: url(#filter12863);
+}
+
+#eastern_australia {
+    opacity: 1;
+    fill: transparent;
+    fill-opacity: 1;
+    fill-rule: evenodd;
+    stroke: #000000;
+    stroke-width: 1.20000005px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    marker: none;
+    marker-start: none;
+    marker-mid: none;
+    marker-end: none;
+    stroke-miterlimit: 4.32165003;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    stroke-opacity: 0.58527132;
+    visibility: visible;
+    display: inline;
+    overflow: visible;
+    filter: url(#filter12951);
+    enable-background: accumulate;
+}

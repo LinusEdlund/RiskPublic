@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@rendermode InteractiveServer
+@inject IJSRuntime JsRuntime
+
+
+<div class="chat-comp">
+    <div class="chat-wrapp" id="messagesList">
+        <div class="message-box" id="messageContainer">
+            @for (int i = 0; i < Messages.Count; i++)
+            {
+                <div class="chat-message">
+                    <div class="chat-icon"><IconComponent Color="@Colors[i]"></IconComponent></div>
+                    <div class="the-message">@Messages[i]</div>
+                </div>
+
+            }
+        </div>
+        <div class="chat-input">
+            <input class="input-box-chat" type="text" @bind="messageInput" @bind:event="oninput" @onkeydown="HandleKeyDown" placeholder="Say something..." />
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public List<string> Colors { get; set; } = new();
+
+    [Parameter]
+    public List<string> Messages { get; set; } = new();
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
+    public string PersonsColor { get; set; }
+
+    private string messageInput = "";
+
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            string currentMessage = messageInput;
+
+            messageInput = "";
+            await Send(currentMessage);
+        }
+    }
+
+    private async Task Send(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return;
+        }
+        if (HubConnection is not null)
+        {
+            await HubConnection.SendAsync("SendMessage", Url, PersonsColor, message);
+        }
+        
+    }
+
+
+}

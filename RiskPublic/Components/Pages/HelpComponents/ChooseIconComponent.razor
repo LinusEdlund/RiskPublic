@@ -1,0 +1,113 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+@inject NavigationManager navManager
+
+
+<div class="icon-page">
+
+    <h1 class="icon-text">Please enter your username and select an icon to play</h1>
+    <input type="text" @bind="nameInput" class="input-box" />
+    <div class="icon-side">
+        <div class="icon-picker">
+            @foreach (var color in Colors)
+            {
+                ColorsModel currentId = color;
+                <div @onclick="@(() => ClickedIcon(currentId))" class="card-icon @HideNotAvailable(currentId)">
+                    <div class="icon-size">
+                        <IconComponent Color="@currentId.Name"></IconComponent>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+
+
+@code {
+    [Parameter]
+    public List<ColorsModel> Colors { get; set; } = new();
+
+    [Parameter]
+    public List<PlayerModel> Players { get; set; }
+
+    [Parameter]
+    public EventCallback<PlayerModel> AddPlayer { get; set; }
+
+    [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
+    public bool GameStarted { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    private string nameInput = "";
+    private bool clicked = false;
+
+
+    private async Task ClickedIcon(ColorsModel color)
+    {
+
+
+        if (HubConnection is not null)
+        {
+            await HubConnection.SendAsync("GetList", Url);
+            // why have i done this....
+            await HubConnection.SendAsync("GameState", Url);
+        }
+        await Task.Delay(500);
+        if (nameInput.Length < 1)
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "Please enter your name first.");
+            return;
+        }
+        if (nameInput.Length > 11)
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "Your name is too long.");
+            return;
+        }
+        if (color.Available == false)
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "Color is not available.");
+            return;
+        }
+        if (Players is not null && Players.Count >= 6)
+        {
+            await JsRuntime.InvokeVoidAsync("storeToastMessage", $"The {Url} lobby is currently full.");
+            navManager.NavigateTo("/");
+            return;
+        }
+
+        if (GameStarted == true)
+        {
+            await JsRuntime.InvokeVoidAsync("storeToastMessage", $"The game at {Url} has already started.");
+            navManager.NavigateTo("/");
+            return;
+        }
+
+        
+        if (clicked)
+        {
+            return;
+        }
+        clicked = true;
+        PlayerModel model = new();
+        model.Color = color.Name;
+        model.Name = nameInput;
+
+        await AddPlayer.InvokeAsync(model);
+    }
+
+    private string HideNotAvailable(ColorsModel color)
+    {
+        if (color.Available == false)
+        {
+            return "hide-Color";
+        }
+        return "";
+    }
+}

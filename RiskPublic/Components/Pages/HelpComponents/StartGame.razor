@@ -1,0 +1,253 @@
+﻿@inject IJSRuntime JsRuntime;
+@rendermode InteractiveServer
+
+
+@if (IsHost())
+{
+    <button class="box-con" @onclick="Start">Start</button>
+}
+
+@code {
+    [Parameter]
+    public List<PlayerModel> Players { get; set; }
+
+    [Parameter]
+    public string PersonId { get; set; }
+
+    [Parameter]
+    public EventCallback<List<PlayerModel>> StartCallBack { get; set; }
+
+
+    private bool IsHost()
+    {
+        var person = Players.FirstOrDefault(x => x.ConnectionId == PersonId);
+        if (person is not null && person.Host == true)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private async Task Start()
+    {
+        if (Players.Count < 2)
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "You need to have at least two players to start the game. You can add a bot.");
+            return;
+        }
+        if (Players.Count > 6)
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "A game can't have more than six players to start.");
+            return;
+        }
+        if (Players.Where(x => x.Bot == false).Count() > 1 && Players.Any(x => x.Bot == true))
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "You can't start a game with 2 players and bots right now. I'm working on fixing it. In the meantime, you can kick players.");
+            return;
+        }
+        List<string> getCountries = await JsRuntime.InvokeAsync<List<string>>("getCountries");
+        await Placing(Players.Count, getCountries);
+        await StartCallBack.InvokeAsync(Players);
+    }
+
+    private async Task Placing(int players, List<string> countries)
+    {
+        int land = countries.Count / players;
+        Dictionary<int, int[]> playersBord = new();
+        int soldier = HowManySoliders(players);
+        List<int> indexPlayers = new();
+
+        for (int i = 0; i < players; i++)
+        {
+            if ((land == 10 && i < 2) || (land == 8 && i < 2))
+            {
+                int landSum = land + 1;
+                int[] bord = GenerateArrayWithSum(soldier, landSum, 1, 5);
+                playersBord.Add(i, bord);
+            }
+            else
+            {
+                int[] bord = GenerateArrayWithSum(soldier, land, 1, 5);
+                playersBord.Add(i, bord);
+            }
+
+
+            indexPlayers.Add(i);
+        }
+
+        Random random = new();
+        int count = 0;
+        List<int> copy = new List<int>(indexPlayers);
+        int notEven = 0;
+
+        foreach (var country in countries)
+        {
+            if (copy.Count == 0)
+            {
+                copy = new List<int>(indexPlayers);
+                count++;
+            }
+
+            int r = random.Next(0, copy.Count);
+            int number = copy[r];
+            copy.RemoveAt(r);
+
+            if (count >= playersBord[number].Length)
+            {
+                number = notEven;
+                copy.RemoveAt(number);
+                notEven++;
+            }
+            int amoutOfSolider = playersBord[number][count];
+
+            Players[number].Soldiers += amoutOfSolider;
+            Players[number].Land++;
+            Players[number].OwnedCountries.Add(country, amoutOfSolider);
+        }
+
+        await CantGetExtraSolInTheStart();
+
+    }
+
+    private async Task CantGetExtraSolInTheStart()
+    {
+        bool more = false;
+        foreach (var p in Players)
+        {
+            int soldiers = 0;
+            soldiers += Na(p);
+            soldiers += Sa(p);
+            soldiers += Eu(p);
+            soldiers += Afrika(p);
+            soldiers += Asia(p);
+            soldiers += Ocean(p);
+            if (soldiers > 0)
+            {
+                more = true;
+                break;
+            }
+        }
+
+        if (more)
+        {
+            foreach (var p in Players)
+            {
+                p.OwnedCountries = new();
+                p.Soldiers = 0;
+                p.Land = 0;
+            }
+            await Start();
+        }
+    }
+
+    private int HowManySoliders(int players)
+    {
+        if (players == 2)
+        {
+            return 40;
+        }
+        if (players == 3)
+        {
+            return 35;
+        }
+        if (players == 4)
+        {
+            return 30;
+        }
+        if (players == 5)
+        {
+            return 25;
+        }
+        if (players == 6)
+        {
+            return 20;
+        }
+        return 0;
+    }
+
+    private int[] GenerateArrayWithSum(int targetSum, int length, int minValue, int maxValue)
+    {
+        Random random = new Random();
+        int[] array = new int[length];
+        int sum = 0;
+
+        // Generate random numbers between minValue and maxValue
+        for (int i = 0; i < length; i++)
+        {
+            array[i] = random.Next(minValue, maxValue + 1);
+            sum += array[i];
+        }
+
+        // Adjust array elements to meet the target sum
+        while (sum != targetSum)
+        {
+            // Randomly select an index to increment or decrement
+            int index = random.Next(0, length);
+
+            // Increment or decrement the selected element
+            // i know that it can now go over the maxvalue but thats fine i want it too
+            if (sum < targetSum)
+            {
+                array[index]++;
+                sum++;
+            }
+            else if (sum > targetSum && array[index] > minValue)
+            {
+                array[index]--;
+                sum--;
+            }
+        }
+
+        return array;
+    }
+
+    private bool continentCalc(List<string> contries, PlayerModel playing)
+    {
+
+        foreach (var c in contries)
+        {
+            if (playing.OwnedCountries.ContainsKey(c) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private int Na(PlayerModel p)
+    {
+        bool ownIt = continentCalc(["alaska", "ontario", "northwest_territory", "greenland", "eastern_united_states", "western_united_states", "quebec", "central_america", "alberta"], p);
+        return ownIt ? 5 : 0;
+    }
+
+    private int Sa(PlayerModel p)
+    {
+        bool ownIt = continentCalc(["venezuela", "brazil", "argentina", "peru"], p);
+        return ownIt ? 2 : 0;
+    }
+
+    private int Eu(PlayerModel p)
+    {
+        bool ownIt = continentCalc(["iceland", "great_britain", "scandinavia", "ukraine", "southern_europe", "western_europe", "northern_europe"], p);
+        return ownIt ? 5 : 0;
+    }
+
+    private int Afrika(PlayerModel p)
+    {
+        bool ownIt = continentCalc(["madagascar", "north_africa", "egypt", "east_africa", "congo", "south_africa"], p);
+        return ownIt ? 3 : 0;
+    }
+
+    private int Asia(PlayerModel p)
+    {
+        bool ownIt = continentCalc(["japan", "yakursk", "kamchatka", "siberia", "ural", "afghanistan", "middle_east", "india", "siam", "china", "mongolia", "irkutsk"], p);
+        return ownIt ? 7 : 0;
+    }
+
+    private int Ocean(PlayerModel p)
+    {
+        bool ownIt = continentCalc(["eastern_australia", "indonesia", "new_guinea", "western_australia"], p);
+        return ownIt ? 2 : 0;
+    }
+}

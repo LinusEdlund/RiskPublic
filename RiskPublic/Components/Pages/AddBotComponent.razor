@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+
+<div class="center-addbot">
+    <button @onclick="AddBot" class="add-bot-btn">Add Bot</button>
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public List<ColorsModel> Colors { get; set; } = new();
+
+    [Parameter]
+    public string Url { get; set; }
+
+    [Parameter]
+    public List<PlayerModel> Players { get; set; }
+
+    private async Task AddBot()
+    {
+        PlayerModel player = new();
+        player.Color = GetColor();
+        player.Name = GetName();
+        player.Bot = true;
+        await HubConnection.SendAsync("Add", Url, player);
+        // have to call GetList to get color
+    }
+
+    private string GetName()
+    {
+        List<string> botNames = ["Svenbot", "Ovebot", "Larsbot", "Annabot", "Karinbot", "Nilsbot", "Pellebot"];
+        Random rnd = new();
+
+        while (botNames.Count > 0)
+        {
+            int randomInt = rnd.Next(0, 6);
+            if (Players.Exists(x => x.Name.Contains(botNames[randomInt])) == false)
+            {
+                return botNames[randomInt];
+            }
+            else
+            {
+                botNames.RemoveAt(randomInt);
+            }
+        }
+
+        return "Hansbot";
+    }
+
+    private string GetColor()
+    {
+        foreach (var color in Colors)
+        {
+            // färgen har inte används än (Available funkade inte på color objectet)
+            if (Players.Exists(x => x.Color == color.Name) == false)
+            {
+                return color.Name;
+            }
+        }
+        return "";
+        // var color = Colors.First(x => x.Available == true);
+        // return color.Name;
+    }
+}

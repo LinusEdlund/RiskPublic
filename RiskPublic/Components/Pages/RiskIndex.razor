@@ -1,0 +1,47 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.SignalR.Client
+@using RiskPublic.Components.Pages.HelpComponents
+@inject NavigationManager navManger
+@inject IJSRuntime JsRuntime;
+
+
+<PageTitle>Home</PageTitle>
+
+<div class="index-page">
+
+    <h1 class="headline">Risk</h1>
+
+    <div class="menu">
+        <CreateGameButton HubConnection="@_hubConnection" Message="Create a game"></CreateGameButton>
+        <NavLink href="join" class="create-button">Join a game</NavLink>
+    </div>
+</div>
+
+<div class="toastBox" id="page-toast"></div>
+
+
+@code {
+    private HubConnection? _hubConnection;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("showToastFromStorage");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(navManger.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        await _hubConnection.StartAsync();
+
+    }
+
+
+
+}

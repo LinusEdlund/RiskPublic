@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager navManger
+
+<button @onclick="CreateGame" class="create-button">@Message</button>
+
+@code {
+
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    private async Task CreateGame()
+    {
+        string gameRoomName = GenerateShortId();
+
+        await HubConnection.SendAsync("CreateGame", gameRoomName);
+        navManger.NavigateTo($"/signal/{gameRoomName}");
+    }
+
+    private string GenerateShortId()
+    {
+        Random random = new Random();
+        byte[] buffer = new byte[6];
+        random.NextBytes(buffer);
+
+        string shortId = Convert.ToBase64String(buffer)
+                            .Replace("/", "_")
+                            .Replace("+", "-")
+                            .Substring(0, 5);
+
+        return shortId;
+    }
+
+}

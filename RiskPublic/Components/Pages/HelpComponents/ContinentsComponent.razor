@@ -1,0 +1,57 @@
+﻿@rendermode InteractiveServer
+
+<div @onmouseover="hoverIn"
+     @onmouseout="hoverOut" class="box-con">
+    Continents
+</div>
+
+@if (hovering)
+{
+    <div class="con-wrapp">
+        <div>
+            <div class="con">
+                <img src="/images/continents/afrika-risk.png" />
+                <div>AF</div>
+                <div>3</div>
+            </div>
+            <div class="con">
+                <img src="/images/continents/asia-risk.png" />
+                <div>AS</div>
+                <div>7</div>
+            </div>
+            <div class="con">
+                <img src="/images/continents/austrila-risk.png" />
+                <div>AUS</div>
+                <div>2</div>
+            </div>
+        </div>
+        <div>
+            <div class="con">
+                <img src="/images/continents/eu-risk.png" />
+                <div>EU</div>
+                <div>5</div>
+            </div>
+            <div class="con">
+                <img src="/images/continents/na-risk.png" />
+                <div>NA</div>
+                <div>3</div>
+            </div>
+            <div class="con">
+                <img src="/images/continents/sa-risk.png" />
+                <div>SA</div>
+                <div>2</div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+
+
+@code {
+    private bool hovering = false;
+
+    private void hoverIn() => hovering = true;
+    private void hoverOut() => hovering = false;
+}

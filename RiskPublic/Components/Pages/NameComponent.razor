@@ -1,0 +1,20 @@
+﻿@rendermode InteractiveServer
+
+<h3>Username</h3>
+<input @bind="name" />
+<button @onclick="SendStringToParent">Com</button>
+
+@code {
+
+    // TODO fix so there is uniq names u can not have that same name
+    private string? name;
+
+    [Parameter]
+    public EventCallback<string> EventName { get; set; }
+
+    private async Task SendStringToParent()
+    {
+        // Invoke the event callback and pass the string value
+        await EventName.InvokeAsync(name);
+    }
+}

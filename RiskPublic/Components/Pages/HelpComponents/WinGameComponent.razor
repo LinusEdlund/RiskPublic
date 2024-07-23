@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+
+<div class="win-con">
+    <div class="text-win">Game over!</div>
+    <div class="info-win">
+        <div class="small-text-win">
+            and the winner is...
+        </div>
+        <div class="winner-info">
+            <div class="icon-win"><IconComponent Color="@Winner.Color"></IconComponent></div>
+            <div>@Winner.Name</div>
+        </div>
+    </div>
+    <div class="btn-win">
+        <CreateGameButton HubConnection="@HubConnection" Message="Another Game"></CreateGameButton>
+        <NavLink href="/" class="create-button win-btn">Back to home page</NavLink>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public PlayerModel Winner { get; set; }
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+}

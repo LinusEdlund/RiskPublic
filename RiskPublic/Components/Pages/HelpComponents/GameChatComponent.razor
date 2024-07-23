@@ -1,0 +1,26 @@
+﻿
+
+<div class="chat-comp">
+    <div class="chat-wrapp">
+        <div class="message-box" id="game-chat">
+            @foreach (var m in Messages)
+            {
+                <div class="chat-message game-chat">
+                    @((MarkupString)m)
+                </div>
+            }
+        </div>
+
+    </div>
+
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    public List<string> Messages { get; set; } = new();
+
+
+}

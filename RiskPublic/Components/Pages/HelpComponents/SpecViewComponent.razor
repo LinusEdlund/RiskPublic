@@ -1,0 +1,146 @@
+﻿@using Risk.Enums
+@rendermode InteractiveServer
+
+<div class="place-turn">
+    <div class="turn-indecator">
+        <div class="icon-phase"><IconComponent Color="@ActivPlayer.Color"></IconComponent></div>
+
+        <div class="next-wrap">
+            <div class="text-phase">@GetPhase()</div>
+            <div class="turn-wrap">
+                @if (PhaseProp == Phase.AddSoldiers)
+                {
+                    <div class="turn" id="turn-on"></div>
+                    <div class="turn"></div>
+                    <div class="turn"></div>
+                }
+                else if (PhaseProp == Phase.Attack)
+                {
+                    <div class="turn"></div>
+                    <div class="turn" id="turn-on"></div>
+                    <div class="turn"></div>
+                }
+                else
+                {
+                    <div class="turn"></div>
+                    <div class="turn"></div>
+                    <div class="turn" id="turn-on"></div>
+                }
+
+            </div>
+        </div>
+
+        @if (PhaseProp == Phase.AddSoldiers)
+        {
+            <div class="add-sol" style="border-color: @ActivPlayer.Color;">
+                @AmountOfSoldersAdding()
+            </div>
+        }
+        else if (PhaseProp == Phase.Attack)
+        {
+            <div class="add-sol" style="border-color: @ActivPlayer.Color;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dice-3" viewBox="0 0 16 16">
+                    <path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3z" />
+                    <path d="M5.5 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m8 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-4-4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dice-6" viewBox="0 0 16 16">
+                    <path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3z" />
+                    <path d="M5.5 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m8 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-8 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                </svg>
+            </div>
+        }
+        else
+        {
+            <div class="add-sol" style="border-color: @ActivPlayer.Color;">
+                <img src="/images/whitesol.png" />
+            </div>
+        }
+
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public PlayerModel ActivPlayer { get; set; }
+
+    [Parameter]
+    public Phase PhaseProp { get; set; }
+
+    private string GetPhase()
+    {
+        if (PhaseProp == Phase.AddSoldiers)
+        {
+            return "Add Soldiers";
+        }
+        else if (PhaseProp == Phase.Attack)
+        {
+            return "Attack";
+        }
+        else
+        {
+            return "Move";
+        }
+    }
+
+    private int AmountOfSoldersAdding()
+    {
+        int soldiers = 3;
+        soldiers += Na();
+        soldiers += Sa();
+        soldiers += Eu();
+        soldiers += Afrika();
+        soldiers += Asia();
+        soldiers += Ocean();
+        return soldiers;
+    }
+
+    private int Na()
+    {
+        bool ownIt = continentCalc(["alaska", "ontario", "northwest_territory", "greenland", "eastern_united_states", "western_united_states", "quebec", "central_america", "alberta"]);
+        return ownIt ? 5 : 0;
+    }
+
+    private int Sa()
+    {
+        bool ownIt = continentCalc(["venezuela", "brazil", "argentina", "peru"]);
+        return ownIt ? 2 : 0;
+    }
+
+    private int Eu()
+    {
+        bool ownIt = continentCalc(["iceland", "great_britain", "scandinavia", "ukraine", "southern_europe", "western_europe", "northern_europe"]);
+        return ownIt ? 5 : 0;
+    }
+
+    private int Afrika()
+    {
+        bool ownIt = continentCalc(["madagascar", "north_africa", "egypt", "east_africa", "congo", "south_africa"]);
+        return ownIt ? 3 : 0;
+    }
+
+    private int Asia()
+    {
+        bool ownIt = continentCalc(["japan", "yakursk", "kamchatka", "siberia", "ural", "afghanistan", "middle_east", "india", "siam", "china", "mongolia", "irkutsk"]);
+        return ownIt ? 7 : 0;
+    }
+
+    private int Ocean()
+    {
+        bool ownIt = continentCalc(["eastern_australia", "indonesia", "new_guinea", "western_australia"]);
+        return ownIt ? 2 : 0;
+    }
+
+    private bool continentCalc(List<string> contries)
+    {
+
+        foreach (var c in contries)
+        {
+            if (ActivPlayer.OwnedCountries.ContainsKey(c) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+}

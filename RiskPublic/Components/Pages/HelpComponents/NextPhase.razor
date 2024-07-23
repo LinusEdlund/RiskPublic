@@ -1,0 +1,97 @@
+﻿@using Risk.Enums
+@rendermode InteractiveServer
+
+<div class="place-turn">
+    <div class="turn-indecator">
+        <div class="icon-phase"><IconComponent Color="@Player.Color"></IconComponent></div>
+
+        <div class="next-wrap">
+            <div class="text-phase">@GetPhase()</div>
+            <div class="turn-wrap">
+                @if (PhaseProp == Phase.AddSoldiers)
+                {
+                    <div class="turn" id="turn-on"></div>
+                    <div class="turn"></div>
+                    <div class="turn"></div>
+                }
+                else if (PhaseProp == Phase.Attack)
+                {
+                    <div class="turn"></div>
+                    <div class="turn" id="turn-on"></div>
+                    <div class="turn"></div>
+                }
+                else
+                {
+                    <div class="turn"></div>
+                    <div class="turn"></div>
+                    <div class="turn" id="turn-on"></div>
+                }
+
+            </div>
+            <button class="next-btn" @onclick="Next">Next Phase</button>
+        </div>
+
+        @if (PhaseProp == Phase.AddSoldiers)
+        {
+            <div class="add-sol" style="border-color: @Player.Color;">
+                @Player.AddedSoldiers
+            </div>
+        }
+        else if (PhaseProp == Phase.Attack)
+        {
+            <div class="add-sol" style="border-color: @Player.Color;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dice-3" viewBox="0 0 16 16">
+                    <path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3z" />
+                    <path d="M5.5 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m8 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-4-4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-dice-6" viewBox="0 0 16 16">
+                    <path d="M13 1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zM3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3z" />
+                    <path d="M5.5 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m8 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m-8 4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-4a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                </svg>
+            </div>
+        }
+        else
+        {
+            <div class="add-sol" style="border-color: @Player.Color;">
+                <img src="/images/whitesol.png" />
+            </div>
+        }
+
+
+    </div>
+</div>
+
+
+
+@code {
+
+    [Parameter]
+    public Phase PhaseProp { get; set; }
+
+    [Parameter]
+    public PlayerModel Player { get; set; }
+
+    [Parameter]
+    public EventCallback<Phase> NextPlayer { get; set; }
+
+    private async Task Next()
+    {
+        await NextPlayer.InvokeAsync();
+    }
+
+    private string GetPhase()
+    {
+        if (PhaseProp == Phase.AddSoldiers)
+        {
+            return "Add Soldiers";
+        }
+        else if (PhaseProp == Phase.Attack)
+        {
+            return "Attack";
+        }
+        else
+        {
+            return "Move";
+        }
+    }
+}

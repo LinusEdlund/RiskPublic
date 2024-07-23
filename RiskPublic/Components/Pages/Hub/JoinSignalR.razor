@@ -1,0 +1,82 @@
+﻿@page "/join"
+@using Microsoft.AspNetCore.SignalR.Client
+@using RiskPublic.Components.Pages.HelpComponents
+@inject NavigationManager navManger
+@rendermode InteractiveServer
+
+@if (games.Count < 1 || (games.Count == 1 && games.First().PlayersCount < 1))
+{
+    <div class="join-page-0">
+        <h1>There are no games right now.</h1>
+        <CreateGameButton HubConnection="_hubConnection" Message="Create Your Own Game"></CreateGameButton>
+
+    </div>
+}
+else
+{
+    <div class="join-page">
+        <div class="info-join">
+            <h3>All Games</h3>
+            <div class="content-join">
+                @foreach (var game in games)
+                {
+                    if (game.PlayersCount > 0)
+                    {
+                        <NavLink href="@($"signal/{game.UrlName}")" class="thumb">
+                            <div>Classic Game</div>
+                            <div>@game.UrlName</div>
+                            <div class="url-count">
+                                <div>@game.PlayersCount</div>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                                </svg>
+                            </div>
+                            <div class="icons-join">
+                                @if (game.Colors is not null)
+                                {
+                                    @foreach (var color in game.Colors)
+                                    {
+                                        <div class="icon-join">
+                                            <IconComponent Color="@color"></IconComponent>
+                                        </div>
+
+                                    }
+                                }
+
+                            </div>
+                        </NavLink>
+                    }
+                }
+            </div>
+        </div>
+
+
+    </div>
+}
+
+
+@code {
+
+    private List<JoinGameModel> games = new();
+    private HubConnection? _hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(navManger.ToAbsoluteUri("/chathub"))
+            .Build();
+
+
+
+        _hubConnection.On<List<JoinGameModel>>("GetUrlListGame", (list) =>
+        {
+
+            games = list;
+            InvokeAsync(StateHasChanged);
+        });
+
+        await _hubConnection.StartAsync();
+
+        await _hubConnection.SendAsync("GetUrlList");
+    }
+}

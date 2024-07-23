@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@rendermode InteractiveServer
+
+@if (clicked == false && Playing?.ConnectionId != PersonId)
+{
+    <button class="box-con" @onclick="StartTime">Vote Kick</button>
+}
+
+
+@if (ClockStarted == true)
+{
+    <p class="time">@TimeRemaining sec</p>
+}
+
+
+@code {
+
+    [Parameter]
+    public HubConnection HubConnection { get; set; }
+
+    [Parameter]
+    public PlayerModel Playing { get; set; }
+
+    [Parameter]
+    public int TimeRemaining { get; set; }
+
+    [Parameter]
+    public bool ClockStarted { get; set; }
+
+    [Parameter]
+    public string URL { get; set; }
+
+    [Parameter]
+    public string PersonId { get; set; }
+
+    private bool clicked = false;
+
+    private async Task StartTime()
+    {
+        clicked = true;
+        if (ClockStarted == true)
+        {
+            TimeRemaining -= 60;
+            await HubConnection.SendAsync("StartClock", URL, TimeRemaining);
+            return;
+        }
+        await HubConnection.SendAsync("StartClock", URL, TimeRemaining);
+        PlayerModel pStarted = Playing;
+        while (TimeRemaining > 0)
+        {
+            if (pStarted.ConnectionId != Playing.ConnectionId)
+            {
+                // stop the timer
+                clicked = false;
+                await HubConnection.SendAsync("StopClock", URL);
+                return;
+            }
+
+            await Task.Delay(1000); // Wait for 1 second
+            TimeRemaining--;
+            await HubConnection.SendAsync("StartClock", URL, TimeRemaining);
+        }
+
+        await HubConnection.SendAsync("Kick", URL, pStarted);
+
+    }
+
+}

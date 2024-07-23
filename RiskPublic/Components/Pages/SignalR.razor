@@ -1,0 +1,940 @@
+﻿@page "/signal/{urlName}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using RiskPublic.Components.Pages.HelpComponents
+@using Risk.Enums
+@using RiskLibrary.Service.Move.Interface
+@inject NavigationManager navManager
+@inject IResolveAttackService ResolveAttack
+@inject IAttackDictionaryService AttackDictionary
+@inject IPathAvailable PathAvailable
+@rendermode InteractiveServer
+@implements IAsyncDisposable
+@inject IJSRuntime JsRuntime;
+
+
+@if (hasAName == false)
+{
+    <ChooseIconComponent Colors="@colorModels" AddPlayer="@GetIcon" Players="@players" HubConnection="@_hubConnection" Url="@UrlName" GameStarted="@start"></ChooseIconComponent>
+}
+else
+{
+    <div class="map-lol">
+        <SVGGame Players="@players" PlacingCss="@UpdateingBord" RefreshedList="@UpdateList" ActivePlayer="@playing" ShowAddingSoldiers="@GetAddingSolders" LastClickedCountry="@ClickedCountry" WhatPhase="@_phase" ShowMovingSoldiers="@GetMove" MHelpModel="@GetMoveModel" Turn="@turn" PersonId="@personId" HubConnection="@_hubConnection" Url="@UrlName" ></SVGGame>
+        <div class="match-stats">
+            <StatsComponent Colors="@colorModels" Players="@players" Playing="@playing" URL="@UrlName" GameStarted="@start" HubConnection="_hubConnection" PersonId="@personId"></StatsComponent>
+
+            <div class="info">
+                <div class="chat-con">
+                    <div class="buttons">
+                        @if (start == true)
+                        {
+                            <VoteKickComponent ClockStarted="@clockStarted" HubConnection="@_hubConnection" URL="@UrlName" Playing="@playing" TimeRemaining="@timeRemaining" PersonId="@personId"></VoteKickComponent>
+                        }
+                        <ContinentsComponent></ContinentsComponent>
+
+                        @if (start == false)
+                        {
+                            <StartGame PersonId="@personId" Players="@players" StartCallBack="@Start"></StartGame>
+                        }
+
+                        @if (showMessageChat)
+                        {
+                            <button class="box-con" @onclick="@(() => showMessageChat = false)">Battle Log</button>
+                        }
+                        else
+                        {
+                            <button class="box-con" @onclick="@(() => showMessageChat = true)">Chat</button>
+                        }
+                    </div>
+
+                    @if (showMessageChat)
+                    {
+                        <ChatComponent Colors="@colors" Messages="@messages" HubConnection="@_hubConnection" Url="@UrlName" PersonsColor="@(players.FirstOrDefault(x => x.ConnectionId == personId)?.Color)"></ChatComponent>
+                    }
+                    else
+                    {
+                        <GameChatComponent Messages="@gameChat"></GameChatComponent>
+                    }
+
+                </div>
+
+            </div>
+        </div>
+        @if (playing is not null)
+        {
+            if (playing.ConnectionId == personId)
+            {
+                if (addSoldiers && _phase == Phase.AddSoldiers)
+                {
+                    <AddSoldersComponent Player="@playing" RefreshedPlayer="@AddSolRef" False="@AddSoldiersFalse"></AddSoldersComponent>
+                }
+                else if (moveModel is not null && canMove && _phase == Phase.MoveSoldiers)
+                {
+                    <MoveComponent MaxSoldiers="@(moveModel.SoldersFirst - 1)" Player="@playing" Move="@ComfirmMove" False="@MoveSoldersFalse"></MoveComponent>
+                }
+                else
+                {
+                    <NextPhase Player="@playing" PhaseProp="@_phase" NextPlayer="@NewPhase"></NextPhase>
+                }
+            }
+            else
+            {
+                <SpecViewComponent ActivPlayer="@playing" PhaseProp="@_phase"></SpecViewComponent>
+            }
+        }
+        @if (winner is not null)
+        {
+
+            <WinGameComponent Winner="@players[0]" HubConnection="@_hubConnection"></WinGameComponent>
+        }
+
+    </div>
+
+
+}
+
+<div class="toastBox" id="page-toast"></div>
+
+
+
+@code {
+    private bool hasAName = false;
+    private HubConnection? _hubConnection;
+    private List<string> messages = new();
+    private List<string> colors = new();
+    private List<PlayerModel> players = new();
+    private bool start = false;
+    [Parameter]
+    public string? UrlName { get; set; }
+    private string? personId;
+    private PlayerModel? playing;
+    private int amountOfSoldersAdding;
+    private string lastClickedCountry;
+    private bool addSoldiers;
+    private Phase _phase = Phase.AddSoldiers;
+    private int turn = 1;
+    private bool canMove = false;
+    private MoveHelperModel? moveModel;
+    private bool clockStarted = false;
+    private int timeRemaining = 300;
+    private List<string> gameChat = new();
+    private bool showMessageChat = true;
+    private PlayerModel? winner;
+
+    List<ColorsModel> colorModels = new List<ColorsModel>
+    {
+        new ColorsModel { Name = "rgb(90, 153, 218)" },
+        new ColorsModel { Name = "rgb(192, 218, 90)"  },
+        new ColorsModel { Name = "rgb(255, 132, 63)" },
+        new ColorsModel { Name = "rgb(195, 72, 72)" },
+        new ColorsModel { Name = "rgb(0, 150, 136)" },
+        new ColorsModel { Name = "rgb(115, 232, 93)" },
+        new ColorsModel { Name = "rgb(154, 110, 94)" },
+        new ColorsModel { Name = "rgb(198, 63, 162)" },
+        new ColorsModel { Name = "rgb(127, 90, 218)" }
+    };
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            colorModels = await GetIconsLeft();
+            await _hubConnection.SendAsync("LobbyExists", UrlName);
+        }
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("Remove", UrlName);
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(navManager.ToAbsoluteUri("/chathub"))
+            .Build();
+
+        _hubConnection.On<string, string>("ReceiveMessage", async (color, message) =>
+        {
+            colors.Add(color);
+            messages.Add(message);
+            await InvokeAsync(StateHasChanged);
+            await JsRuntime.InvokeVoidAsync("scrollToBottom", "messageContainer");
+        });
+
+        _hubConnection.On<List<string>>("GameChatMessage", async messages =>
+        {
+            messages.ForEach(x => gameChat.Add(x));
+            await InvokeAsync(StateHasChanged);
+            await JsRuntime.InvokeVoidAsync("scrollToBottom", "game-chat");
+        });
+
+        _hubConnection.On<PlayerModel>("AddPlayer", player =>
+        {
+            if (personId is null)
+            {
+                personId = player.ConnectionId;
+            }
+            players.Add(player);
+            InvokeAsync(StateHasChanged);
+
+        });
+
+        _hubConnection.On<List<PlayerModel>>("GetPlayersList", (users) =>
+        {
+            players = users;
+            foreach (var user in users)
+            {
+                // colors.Remove(user.Color);
+                ColorsModel? color = colorModels.FirstOrDefault(x => x.Name == user.Color);
+                if (color is not null)
+                {
+                    color.Available = false;
+                }
+            }
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<PlayerModel>("KickPlayer", async player =>
+        {
+            if (player.Bot == true)
+            {
+                var p = players.FirstOrDefault(x => x.Color == player.Color);
+                players.Remove(p);
+                await _hubConnection.SendAsync("Update", UrlName, players);
+                return;
+            }
+
+            if (personId == player.ConnectionId)
+            {
+                await JsRuntime.InvokeVoidAsync("storeToastMessage", "You have been removed from the lobby.");
+                navManager.NavigateTo("/");
+            }
+        });
+
+        _hubConnection.On<string>("RemovePlayer", async (id) =>
+        {
+            var player = players.FirstOrDefault(x => x.ConnectionId == id);
+            if (player is not null)
+            {
+                if (start == true)
+                {
+                    await RemovedPlayerList(player);
+                    players.Remove(player);
+                    await _hubConnection.SendAsync("Update", UrlName, players);
+                    await _hubConnection.SendAsync("Bord", UrlName, players);
+                    if (player.ConnectionId == playing?.ConnectionId)
+                    {
+                        await _hubConnection.SendAsync("Phase", UrlName, Phase.AddSoldiers);
+                        await _hubConnection.SendAsync("Turn", UrlName, turn);
+                    }
+
+                }
+                else
+                {
+                    if (player.Host)
+                    {
+                        if (players[1] is not null)
+                        {
+                            players[1].Host = true;
+                        }
+                    }
+                    players.Remove(player);
+                }
+
+
+                await InvokeAsync(StateHasChanged);
+            }
+
+        });
+
+        _hubConnection.On<bool>("GameLobbyExists", async input =>
+        {
+            if (input == false)
+            {
+                await JsRuntime.InvokeVoidAsync("storeToastMessage", $"Unable to find a room with {UrlName} for you.");
+                navManager.NavigateTo("/");
+            }
+        });
+
+        _hubConnection.On<List<PlayerModel>>("UpdateList", newPlayers =>
+        {
+            players = newPlayers;
+
+            foreach (var player in players)
+            {
+                if (player.Land >= 42)
+                {
+                    winner = playing;
+                    _hubConnection.SendAsync("RemoveLobby", UrlName);
+                }
+            }
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<Phase>("GetPhase", (phase) =>
+        {
+            _phase = phase;
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<List<PlayerModel>>("UpdateBord", async (newBord) =>
+        {
+            await JsRuntime.InvokeVoidAsync("placeSoldiers", newBord);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<bool>("GetGameState", output =>
+        {
+            start = output;
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<bool>("GameStarted", output =>
+        {
+            start = output;
+            showMessageChat = false;
+            InvokeAsync(StateHasChanged);
+        });
+
+
+        _hubConnection.On<int>("GetStartClock", time =>
+        {
+            clockStarted = true;
+            timeRemaining = time;
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On("GetStopClock", () =>
+        {
+            clockStarted = false;
+            timeRemaining = 300;
+            InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<List<PlayerModel>>("RefreshAll", async (newList) =>
+        {
+            players = newList;
+            if (playing is not null)
+            {
+                var p = newList.First(x => x.ConnectionId == playing.ConnectionId);
+                playing = p;
+            }
+            await JsRuntime.InvokeVoidAsync("placeSoldiers", newList);
+            await InvokeAsync(StateHasChanged);
+
+
+        });
+
+        _hubConnection.On<int>("UpdateTurn", async (number) =>
+        {
+            playing = new();
+            if (number > players.Count)
+            {
+                turn = 1;
+                playing = players[0];
+                await WhosTurn(1);
+
+            }
+            else
+            {
+                playing = players[number - 1];
+                await WhosTurn(number);
+            }
+            await InvokeAsync(StateHasChanged);
+
+        });
+
+
+
+        await _hubConnection.StartAsync();
+
+    }
+
+
+
+    private async Task GetIcon(PlayerModel player)
+    {
+        hasAName = true;
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("GetList", UrlName);
+            await _hubConnection.SendAsync("Add", UrlName, player);
+        }
+
+
+    }
+
+
+
+
+    private async Task<List<ColorsModel>> GetIconsLeft()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("GetList", UrlName);
+        }
+        return colorModels;
+    }
+
+
+
+    private async Task UpdateingBord(List<PlayerModel> placings)
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("Bord", UrlName, placings);
+        }
+    }
+
+    private async Task UpdateList(List<PlayerModel> newList)
+    {
+        if (_hubConnection is not null)
+        {
+            // TODO: why am i doing this?
+            if (_phase == Phase.Attack)
+            {
+                playing = new();
+                playing = newList[turn - 1];
+            }
+            await _hubConnection.SendAsync("Update", UrlName, newList);
+        }
+    }
+
+
+
+    private async Task WhosTurn(int number)
+    {
+        turn = number;
+        playing = new();
+        playing = players[number - 1];
+
+        if (playing.Land <= 0 || playing.Soldiers <= 0)
+        {
+            players.Remove(playing);
+            await _hubConnection.SendAsync("Update", UrlName, players);
+            await _hubConnection.SendAsync("Turn", UrlName, turn);
+        }
+        if (personId == playing.ConnectionId)
+        {
+            // await JsRuntime.InvokeVoidAsync("highlightLand", playing);
+            int soldiers = 3;
+            soldiers += Na();
+            soldiers += Sa();
+            soldiers += Eu();
+            soldiers += Afrika();
+            soldiers += Asia();
+            soldiers += Ocean();
+            // kanske ska säga till all hur många gubbar han får
+            playing.AddedSoldiers = soldiers;
+            await InvokeAsync(StateHasChanged);
+        }
+        if (playing.Bot == true)
+        {
+            await BotAddSol();
+
+        }
+    }
+
+    private async Task BotAddSol()
+    {
+        int soldiers = 3;
+        int na = Na();
+        int sa = Sa();
+        int eu = Eu();
+        int afrika = Afrika();
+        int asia = Asia();
+        int ocean = Ocean();
+
+        if (na >= 9) soldiers += 5;
+        if (sa >= 4) soldiers += 2;
+        if (eu >= 7) soldiers += 5;
+        if (afrika >= 6) soldiers += 3;
+        if (asia >= 12) soldiers += 7;
+        if (ocean >= 4) soldiers += 2;
+
+
+
+
+
+        playing.AddedSoldiers = soldiers;
+        await InvokeAsync(StateHasChanged);
+
+
+        decimal naAmount = (decimal)na / 9;
+        decimal saAmount = (decimal)sa / 4;
+        decimal euAmount = (decimal)eu / 7;
+        decimal afrikaAmount = (decimal)afrika / 6;
+        decimal asiaAmount = (decimal)asia / 12;
+        decimal oceanAmount = (decimal)ocean / 4;
+
+        List<string> naList = NaList();
+        List<string> saList = SaList();
+        List<string> euList = EuList();
+        List<string> africaList = AfrikaList();
+        List<string> asiaList = AsiaList();
+        List<string> oceanList = OceanList();
+
+
+        (List<string> continent, decimal amount)[] amounts =
+        {
+            (naList, naAmount),
+            (saList, saAmount),
+            (euList, euAmount),
+            (africaList, afrikaAmount),
+            (asiaList, asiaAmount),
+            (oceanList, oceanAmount)
+    };
+
+        var max = amounts.Where(x => x.amount < 1).MaxBy(x => x.amount);
+
+
+
+        var allCountriesInThatContinent = playing.OwnedCountries.Where(x => max.continent.Contains(x.Key)).ToDictionary();
+
+        var addSolTo = allCountriesInThatContinent.MaxBy(x => x.Value).Key;
+
+        lastClickedCountry = addSolTo;
+        await AddSolRef(soldiers);
+
+        _phase = Phase.Attack;
+        await Task.Delay(500);
+        await BotAttack(addSolTo);
+
+
+
+    }
+
+    private async Task BotAttack(string attackFrom)
+    {
+        var attackList = AttackDictionary.GetAttackDic();
+        while (true)
+        {
+            var result = ResolveCombat(attackFrom, attackList[attackFrom]);
+
+            if (result.HasValue == false)
+            {
+                break;
+            }
+            var (newPlayerList, newChatList) = result.Value;
+            await UpdateingBord(newPlayerList);
+            await UpdateList(newPlayerList);
+            await _hubConnection.SendAsync("GameChat", UrlName, newChatList);
+            await Task.Delay(500);
+            playing = players.Find(x => x.ConnectionId == playing.ConnectionId);
+            attackFrom = playing.OwnedCountries.Last().Key;
+        }
+
+
+
+        await NewPhase();
+        _phase = Phase.MoveSoldiers;
+        await Task.Delay(500);
+
+        // move where it can get attacked
+        await MoveBot(attackList);
+
+    }
+
+    private async Task MoveBot(Dictionary<string, List<string>> attackList)
+    {
+        List<string> vulnerableCountrys = new();
+        foreach (var c in playing.OwnedCountries)
+        {
+            var posAttacks = attackList[c.Key];
+            foreach (var potentialAttack in posAttacks)
+            {
+                if (!playing.OwnedCountries.ContainsKey(potentialAttack))
+                {
+                    vulnerableCountrys.Add(c.Key);
+                    break;
+                }
+            }
+        }
+
+        // make a list of all the countrys that cant be attackt but have more than 1 solder
+        List<KeyValuePair<string, int>> CantBeAttacked = new List<KeyValuePair<string, int>>();
+        foreach (var country in playing.OwnedCountries)
+        {
+            if (country.Value > 1)
+            {
+                var posAttacks = attackList[country.Key];
+                bool canBeAttacked = false;
+
+                // Check if the country can be attacked
+                foreach (var potentialAttack in posAttacks)
+                {
+                    if (!playing.OwnedCountries.ContainsKey(potentialAttack))
+                    {
+                        canBeAttacked = true;
+                        break;
+                    }
+                }
+
+                if (canBeAttacked == false)
+                {
+                    CantBeAttacked.Add(new KeyValuePair<string, int>(country.Key, country.Value));
+                }
+            }
+        }
+
+        // do so CantBeAttacked list be empty 
+        while (CantBeAttacked.Count > 0)
+        {
+            vulnerableCountrys = ShuffleList<string>(vulnerableCountrys);
+            foreach (var c in CantBeAttacked)
+            {
+                if (PathAvailable.IsPathAvailable(c.Key, vulnerableCountrys[0], attackList, playing))
+                {
+                    CantBeAttacked.Remove(c);
+                    moveModel = new();
+                    moveModel.FirstClickedCountry = c.Key;
+                    moveModel.SecClickedCountry = vulnerableCountrys[0];
+                    await ComfirmMove(c.Value - 1);
+                    await Task.Delay(500);
+                    break;
+                }
+            }
+        }
+        await Task.Delay(500);
+        await NewPhase();
+
+    }
+
+    private List<T> ShuffleList<T>(List<T> list)
+    {
+        Random rng = new Random();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+
+        return list;
+    }
+
+    private (List<PlayerModel>, List<string>)? ResolveCombat(string attackFrom, List<string> posAttacks)
+    {
+        // the playing person maybe is not updated 
+        PlayerModel attackingPlayer = players.Find(x => x.ConnectionId == playing.ConnectionId);
+        foreach (var c in posAttacks)
+        {
+            // if the player dose not own the country we want to attack
+            if (!attackingPlayer.OwnedCountries.ContainsKey(c))
+            {
+                var countryOwner = players.FirstOrDefault(x => x.OwnedCountries.ContainsKey(c));
+                // if the defender dose not have more defenders then the attacker you can attack
+                if ((countryOwner.OwnedCountries[c] >= attackingPlayer.OwnedCountries[attackFrom]) == false)
+                {
+                    return ResolveAttack.ResolveCombat(countryOwner, c, players, attackingPlayer, attackFrom);
+                    
+                }
+            }
+        }
+        return null;
+    }
+
+
+
+    private int CountCountriesOwned(List<string> countries)
+    {
+        int sum = 0;
+        foreach (var c in playing!.OwnedCountries.Keys)
+        {
+            if (countries.Contains(c))
+            {
+                sum++;
+            }
+        }
+        return sum;
+    }
+
+    private List<string> NaList() =>
+        ["alaska", "ontario", "northwest_territory", "greenland", "eastern_united_states", "western_united_states", "quebec", "central_america", "alberta"];
+
+    private List<string> SaList() =>
+        ["venezuela", "brazil", "argentina", "peru"];
+
+    private List<string> EuList() =>
+        ["iceland", "great_britain", "scandinavia", "ukraine", "southern_europe", "western_europe", "northern_europe"];
+
+    private List<string> AfrikaList() =>
+        ["madagascar", "north_africa", "egypt", "east_africa", "congo", "south_africa"];
+
+    private List<string> AsiaList() =>
+         ["japan", "yakursk", "kamchatka", "siberia", "ural", "afghanistan", "middle_east", "india", "siam", "china", "mongolia", "irkutsk"];
+
+    private List<string> OceanList() =>
+         ["eastern_australia", "indonesia", "new_guinea", "western_australia"];
+
+    private int Na()
+    {
+        List<string> naC = NaList();
+
+        if (playing?.Bot == true)
+        {
+            return CountCountriesOwned(naC);
+        }
+        else
+        {
+            bool ownIt = continentCalc(naC);
+            return ownIt ? 5 : 0;
+        }
+
+    }
+
+    private int Sa()
+    {
+        List<string> SaC = SaList();
+
+        if (playing?.Bot == true)
+        {
+            return CountCountriesOwned(SaC);
+        }
+        else
+        {
+            bool ownIt = continentCalc(SaC);
+            return ownIt ? 2 : 0;
+        }
+
+
+    }
+
+    private int Eu()
+    {
+        List<string> euC = EuList();
+
+        if (playing?.Bot == true)
+        {
+            return CountCountriesOwned(euC);
+        }
+        else
+        {
+            bool ownIt = continentCalc(euC);
+            return ownIt ? 5 : 0;
+        }
+
+
+    }
+
+    private int Afrika()
+    {
+        List<string> afrikaC = AfrikaList();
+
+        if (playing?.Bot == true)
+        {
+            return CountCountriesOwned(afrikaC);
+        }
+        else
+        {
+            bool ownIt = continentCalc(afrikaC);
+            return ownIt ? 3 : 0;
+        }
+
+    }
+
+    private int Asia()
+    {
+        List<string> asiaC = AsiaList();
+        if (playing?.Bot == true)
+        {
+            return CountCountriesOwned(asiaC);
+        }
+        else
+        {
+            bool ownIt = continentCalc(asiaC);
+            return ownIt ? 7 : 0;
+        }
+
+    }
+
+    private int Ocean()
+    {
+        List<string> oceanC = OceanList();
+
+        if (playing?.Bot == true)
+        {
+            return CountCountriesOwned(oceanC);
+        }
+        else
+        {
+            bool ownIt = continentCalc(oceanC);
+            return ownIt ? 2 : 0;
+        }
+
+    }
+
+    private bool continentCalc(List<string> contries)
+    {
+
+        foreach (var c in contries)
+        {
+            if (playing.OwnedCountries.ContainsKey(c) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+    private void GetAddingSolders(bool input)
+    {
+        addSoldiers = input;
+    }
+
+    private void ClickedCountry(string country)
+    {
+        lastClickedCountry = country;
+    }
+
+    private async Task AddSolRef(int amount)
+    {
+        playing.AddedSoldiers -= amount;
+        PlayerModel p;
+
+        if (playing.Bot == true)
+        {
+            p = players.First(x => x.Color == playing.Color);
+        }
+        else
+        {
+            p = players.First(x => x.ConnectionId == playing.ConnectionId);
+        }
+
+        
+        p.Soldiers += amount;
+        p.AddedSoldiers = playing.AddedSoldiers;
+        p.OwnedCountries[lastClickedCountry] += amount;
+        if (_hubConnection is not null)
+        {
+            //     await _hubConnection.SendAsync("Update", UrlName, players);
+            //     await _hubConnection.SendAsync("Bord", UrlName, players);
+            await _hubConnection.SendAsync("Refresh", UrlName, players);
+
+            var message = $"<span style=\"color: {p.Color};\">{p.Name} added {amount} soldiers to {lastClickedCountry}</span>";
+            var messageList = new List<string>();
+            messageList.Add(message);
+            await _hubConnection.SendAsync("GameChat", UrlName, messageList);
+
+        }
+        if (p.AddedSoldiers == 0)
+        {
+            // _phase = Phase.Attack;
+            await _hubConnection.SendAsync("Phase", UrlName, Phase.Attack);
+        }
+        addSoldiers = false;
+    }
+
+    private async Task NewPhase()
+    {
+        if (_phase == Phase.AddSoldiers)
+        {
+            await JsRuntime.InvokeVoidAsync("showToast", "You need to add soldiers first before moving on to the next phase.");
+            return;
+        }
+
+        else if (_phase == Phase.Attack)
+        {
+            // _phase = Phase.MoveSoldiers;
+            await _hubConnection.SendAsync("Phase", UrlName, Phase.MoveSoldiers);
+        }
+
+        else if (_phase == Phase.MoveSoldiers)
+        {
+            // _phase = Phase.AddSoldiers;
+            await _hubConnection.SendAsync("Phase", UrlName, Phase.AddSoldiers);
+            await _hubConnection.SendAsync("Turn", UrlName, turn + 1);
+        }
+
+    }
+
+    private async Task RemovedPlayerList(PlayerModel player)
+    {
+        List<int> index = new();
+        for (int i = 0; i < players.Count; i++)
+        {
+            if (player.ConnectionId != players[i].ConnectionId)
+            {
+                index.Add(i);
+            }
+        }
+        List<int> copy = new(index);
+        var rng = new Random();
+        foreach (var country in player.OwnedCountries.Keys)
+        {
+            if (copy.Count == 0)
+            {
+                copy = new(index);
+            }
+            int r = rng.Next(0, copy.Count);
+            int number = copy[r];
+            copy.RemoveAt(r);
+            players[number].Soldiers += 1;
+            players[number].Land += 1;
+            players[number].OwnedCountries.Add(country, 1);
+        }
+
+    }
+
+
+    private async Task ComfirmMove(int amountToMove)
+    {
+        var activ = players.First(x => x.ConnectionId == playing.ConnectionId);
+
+        activ.OwnedCountries[moveModel.FirstClickedCountry] -= amountToMove;
+        activ.OwnedCountries[moveModel.SecClickedCountry] += amountToMove;
+
+        var htmlString = "<div style=\"color: " + activ.Color + ";\">"
+          + activ.Name + " moved " + amountToMove + " to " + moveModel.SecClickedCountry
+          + " from " + moveModel.FirstClickedCountry
+          + "</div>";
+        List<string> s = new();
+        s.Add(htmlString);
+
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("Update", UrlName, players);
+            await _hubConnection.SendAsync("Bord", UrlName, players);
+            await _hubConnection.SendAsync("GameChat", UrlName, s);
+        }
+
+        // why am i doing this
+        playing = players[turn - 1];
+
+        canMove = false;
+    }
+
+    private void GetMove(bool move) => canMove = move;
+    private void GetMoveModel(MoveHelperModel move) => moveModel = move;
+
+    private async Task Start(List<PlayerModel> playersList)
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.SendAsync("Start", UrlName);
+            await _hubConnection.SendAsync("StartGame", UrlName);
+            await _hubConnection.SendAsync("Bord", UrlName, playersList);
+            await _hubConnection.SendAsync("Update", UrlName, playersList);
+            await _hubConnection.SendAsync("Turn", UrlName, 1);
+        }
+        // await PlacingCss.InvokeAsync(Players);
+        // await RefreshedList.InvokeAsync(Players);
+        // await WhosTurn(1);
+    }
+
+    private void AddSoldiersFalse() => addSoldiers = false;
+    private void MoveSoldersFalse() => canMove = false;
+}
