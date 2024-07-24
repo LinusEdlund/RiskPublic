@@ -14,11 +14,9 @@ You can see the number of soldiers available to add at the top of the page, slig
 ### Attacking
 To attack an opponent, first click on one of your countries and then click on the opponent's country you want to attack. The country you want to attack needs to be within range of the first country you clicked on. 
 The computer will determine the outcome of the battle, and you can see the results in the chat on the right.
-
 You can attack as many times as you want, but the attacking country needs to have more soldiers than the defending country.
 
 ### Moving Soldiers
 To move soldiers, click on the country you want to move soldiers from and then click on the second country that will receive the soldiers. Choose how many soldiers you want to move. 
 You need to own both countries, and there must be a pathway of countries you own connecting them.
-
 All countries must have at least one soldier in them, so you cannot move all soldiers out of a country.
