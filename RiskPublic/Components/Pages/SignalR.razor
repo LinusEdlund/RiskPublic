@@ -1,6 +1,5 @@
 ﻿@page "/signal/{urlName}"
 @using Microsoft.AspNetCore.SignalR.Client
-@using RiskPublic.Components.Pages.HelpComponents
 @using Risk.Enums
 @using RiskLibrary.Service.Move.Interface
 @inject NavigationManager navManager
@@ -492,14 +491,9 @@ else
             (asiaList, asiaAmount),
             (oceanList, oceanAmount)
     };
+        
+        string addSolTo = DetermineCountryToAddSol(amounts, playing);
 
-        var max = amounts.Where(x => x.amount < 1).MaxBy(x => x.amount);
-
-
-
-        var allCountriesInThatContinent = playing.OwnedCountries.Where(x => max.continent.Contains(x.Key)).ToDictionary();
-
-        var addSolTo = allCountriesInThatContinent.MaxBy(x => x.Value).Key;
 
         lastClickedCountry = addSolTo;
         await AddSolRef(soldiers);
@@ -510,6 +504,44 @@ else
 
 
 
+    }
+
+    private string DetermineCountryToAddSol((List<string> continent, decimal amount)[] amounts, PlayerModel playing)
+    {
+        if (HasAnyFreeAmount(amounts))
+        {
+            return GetMaxAmountCountry(amounts, playing);
+        }
+        else
+        {
+            return GetFirstNonOwnedCountry(amounts, playing);
+        }
+    }
+
+    private string GetMaxAmountCountry((List<string> continent, decimal amount)[] amounts, PlayerModel playing)
+    {
+        var maxAmountContinent = amounts.Where(x => x.amount < 1).MaxBy(x => x.amount);
+        var allCountriesInThatContinent = playing.OwnedCountries
+            .Where(x => maxAmountContinent.continent.Contains(x.Key))
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        return allCountriesInThatContinent.MaxBy(x => x.Value).Key;
+    }
+
+    private string GetFirstNonOwnedCountry((List<string> continent, decimal amount)[] amounts, PlayerModel playing)
+    {
+        var attackList = AttackDictionary.GetAttackDic();
+
+        return amounts
+            .Where(cont => cont.amount == 1)
+            .SelectMany(cont => cont.continent)
+            .SelectMany(con => attackList[con].Where(attack => !playing.OwnedCountries.ContainsKey(attack)), (con, attack) => con)
+            .FirstOrDefault() ?? string.Empty;
+    }
+
+    private bool HasAnyFreeAmount((List<string> continent, decimal amount)[] amounts)
+    {
+        return amounts.Any(cont => cont.amount > 0 && cont.amount < 1);
     }
 
     private async Task BotAttack(string attackFrom)
